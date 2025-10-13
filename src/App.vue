@@ -1,0 +1,34 @@
+<template>
+  <div id="app">
+    <EstudiantesComponent />
+  </div>
+</template>
+
+<script>
+import EstudiantesComponent from './EstudiantesComponent.vue';
+
+export default {
+  name: 'App',
+  components: {
+    EstudiantesComponent
+  }
+};
+</script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
+}
+
+#app {
+  padding: 20px;
+}
+</style>
+
