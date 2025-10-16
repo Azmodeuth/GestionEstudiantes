@@ -2,25 +2,22 @@
   <div class="estudiantes-container">
     <h1>Gestión de Estudiantes</h1>
 
-    <!-- Sección para agregar estudiante -->
     <div class="seccion-agregar">
       <h2>Agregar Estudiante</h2>
       
-      <!-- Mensaje de éxito -->
-      <div v-if="mensajeExito" class="mensaje exito">
-        {{ mensajeExito }}
-      </div>
+      <div v-if="mensajeExito" class="mensaje exito">{{ mensajeExito }}</div>
 
       <form @submit.prevent="agregarEstudiante" class="formulario" novalidate>
         <div class="campo">
           <label for="nombre">Nombre:</label>
           <input 
             type="text" 
-            id="nombre" 
-            v-model="nuevoEstudiante.nombre" 
+            id="nombre"
             placeholder="Ingrese el nombre"
-            :aria-invalid="errors.nombre ? 'true' : 'false'"
+            :value="nuevoEstudiante.nombre"
+            @input="filtrarLetras($event, 'nombre')"
             :class="{ 'input-error': errors.nombre }"
+            :aria-invalid="errors.nombre ? 'true' : 'false'"
           />
           <p v-if="errors.nombre" class="error-text">{{ errors.nombre }}</p>
         </div>
@@ -30,10 +27,11 @@
           <input 
             type="text" 
             id="apellidos" 
-            v-model="nuevoEstudiante.apellidos" 
             placeholder="Ingrese los apellidos"
-            :aria-invalid="errors.apellidos ? 'true' : 'false'"
+            :value="nuevoEstudiante.apellidos"
+            @input="filtrarLetras($event, 'apellidos')"
             :class="{ 'input-error': errors.apellidos }"
+            :aria-invalid="errors.apellidos ? 'true' : 'false'"
           />
           <p v-if="errors.apellidos" class="error-text">{{ errors.apellidos }}</p>
         </div>
@@ -42,11 +40,12 @@
           <label for="ci">CI:</label>
           <input 
             type="text" 
-            id="ci" 
-            v-model="nuevoEstudiante.ci" 
+            id="ci"
             placeholder="Ingrese el carnet de identidad"
-            :aria-invalid="errors.ci ? 'true' : 'false'"
+            :value="nuevoEstudiante.ci"
+            @input="filtrarNumerosCI"
             :class="{ 'input-error': errors.ci }"
+            :aria-invalid="errors.ci ? 'true' : 'false'"
           />
           <p v-if="errors.ci" class="error-text">{{ errors.ci }}</p>
         </div>
@@ -64,7 +63,6 @@
       </form>
     </div>
     
-    <!-- Sección para visualizar lista de estudiantes -->
     <div class="seccion-lista">
       <h2>Lista de Estudiantes</h2>
       <div v-if="estudiantes.length === 0" class="mensaje-vacio">
@@ -80,7 +78,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- estudiante.ci como key por ser un valor único -->
           <tr v-for="estudiante in estudiantes" :key="estudiante.ci">
             <td data-label="Nombre">{{ estudiante.nombre }}</td>
             <td data-label="Apellidos">{{ estudiante.apellidos }}</td>
@@ -114,31 +111,61 @@ export default {
     };
   },
   methods: {
+    filtrarLetras(event, campo) {
+      const valor = event.target.value;
+      const valorFiltrado = valor.replace(/[^a-zA-Z\s]/g, '');
+      this.nuevoEstudiante[campo] = valorFiltrado;
+      event.target.value = valorFiltrado;
+    },
+
+    filtrarNumerosCI(event) {
+      const valor = event.target.value;
+      const valorFiltrado = valor.replace(/[^\d]/g, '').slice(0, 11);
+      this.nuevoEstudiante.ci = valorFiltrado;
+      event.target.value = valorFiltrado;
+    },
+
     validarFormulario() {
-      this.errors = { nombre: '', apellidos: '', ci: '' }; // Reseteamos errores
+      this.errors = { nombre: '', apellidos: '', ci: '' }; 
       let esValido = true;
 
-      if (!this.nuevoEstudiante.nombre.trim()) {
+      const nombreTrimmed = this.nuevoEstudiante.nombre.trim();
+      if (!nombreTrimmed) {
         this.errors.nombre = 'El nombre es obligatorio.';
         esValido = false;
+      } else if (!/^[a-zA-Z\s]*$/.test(nombreTrimmed)) {
+        this.errors.nombre = 'El nombre no debe contener números ni caracteres especiales.';
+        esValido = false;
       }
-      if (!this.nuevoEstudiante.apellidos.trim()) {
+
+      const apellidosTrimmed = this.nuevoEstudiante.apellidos.trim();
+      if (!apellidosTrimmed) {
         this.errors.apellidos = 'Los apellidos son obligatorios.';
         esValido = false;
+      } else if (!/^[a-zA-Z\s]*$/.test(apellidosTrimmed)) {
+        this.errors.apellidos = 'Los apellidos no deben contener números ni caracteres especiales.';
+        esValido = false;
       }
-      if (!this.nuevoEstudiante.ci.trim()) {
+
+      const ciTrimmed = this.nuevoEstudiante.ci.trim();
+      if (!ciTrimmed) {
         this.errors.ci = 'El CI es obligatorio.';
         esValido = false;
-      } else if (this.estudiantes.some(est => est.ci === this.nuevoEstudiante.ci.trim())) {
-        // .some() verifica si al menos un elemento en el array cumple la condición
+      } else if (!/^\d+$/.test(ciTrimmed)) {
+        this.errors.ci = 'El CI solo debe contener números.';
+        esValido = false;
+      } else if (ciTrimmed.length !== 11) {
+        this.errors.ci = 'El CI debe tener exactamente 11 dígitos.';
+        esValido = false;
+      } else if (this.estudiantes.some(est => est.ci === ciTrimmed)) {
         this.errors.ci = 'Este CI ya ha sido registrado.';
         esValido = false;
       }
 
       return esValido;
     },
+
     agregarEstudiante() {
-      // Ocultar mensaje de éxito anterior
       this.mensajeExito = '';
 
       if (this.validarFormulario()) {
@@ -149,13 +176,10 @@ export default {
           nuevoIngreso: this.nuevoEstudiante.nuevoIngreso
         });
         
-        // Limpiar el formulario
         this.nuevoEstudiante = { nombre: '', apellidos: '', ci: '', nuevoIngreso: false };
         
-        // Mostrar mensaje de éxito
         this.mensajeExito = '¡Estudiante agregado exitosamente!';
 
-        // Ocultar el mensaje de éxito después de 3 segundos
         setTimeout(() => {
           this.mensajeExito = '';
         }, 3000);
@@ -255,7 +279,6 @@ h2 {
   border: 1px solid #c3e6cb;
 }
 
-
 .campo-checkbox {
   display: flex;
   align-items: center;
@@ -334,7 +357,6 @@ h2 {
 .tabla-estudiantes tbody tr:hover {
   background-color: #f5f5f5;
 }
-
 
 @media (max-width: 768px) {
   .estudiantes-container {
