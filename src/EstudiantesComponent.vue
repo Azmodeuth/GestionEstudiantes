@@ -80,7 +80,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Usamos estudiante.ci como key por ser un valor único -->
+          <!-- estudiante.ci como key por ser un valor único -->
           <tr v-for="estudiante in estudiantes" :key="estudiante.ci">
             <td data-label="Nombre">{{ estudiante.nombre }}</td>
             <td data-label="Apellidos">{{ estudiante.apellidos }}</td>
@@ -142,7 +142,6 @@ export default {
       this.mensajeExito = '';
 
       if (this.validarFormulario()) {
-        // Agregamos al estudiante a la lista (usamos trim para limpiar espacios)
         this.estudiantes.push({
           nombre: this.nuevoEstudiante.nombre.trim(),
           apellidos: this.nuevoEstudiante.apellidos.trim(),
@@ -167,7 +166,6 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos base (sin cambios significativos) */
 .estudiantes-container {
   max-width: 900px;
   margin: 0 auto;
@@ -227,10 +225,8 @@ h2 {
   box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
 }
 
-/* --- NUEVOS ESTILOS PARA VALIDACIÓN Y FEEDBACK --- */
-
 .input-error {
-  border-color: #e74c3c; /* Rojo para errores */
+  border-color: #e74c3c;
 }
 
 .input-error:focus {
@@ -259,7 +255,6 @@ h2 {
   border: 1px solid #c3e6cb;
 }
 
-/* --- FIN DE NUEVOS ESTILOS --- */
 
 .campo-checkbox {
   display: flex;
@@ -302,7 +297,7 @@ h2 {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow-x: auto; /* Permite scroll horizontal en caso extremo */
+  overflow-x: auto;
 }
 
 .mensaje-vacio {
@@ -340,7 +335,7 @@ h2 {
   background-color: #f5f5f5;
 }
 
-/* --- NUEVOS ESTILOS PARA DISEÑO RESPONSIVO --- */
+
 @media (max-width: 768px) {
   .estudiantes-container {
     padding: 10px;
@@ -351,7 +346,6 @@ h2 {
   }
 
   .tabla-estudiantes thead {
-    /* Ocultamos la cabecera tradicional en móviles */
     display: none;
   }
 
@@ -369,7 +363,7 @@ h2 {
 
   .tabla-estudiantes td {
     text-align: right;
-    padding-left: 50%; /* Espacio para el label */
+    padding-left: 50%;
     position: relative;
     border-bottom: 1px solid #eee;
   }
@@ -379,7 +373,6 @@ h2 {
   }
 
   .tabla-estudiantes td::before {
-    /* Usamos el atributo data-label para mostrar la cabecera */
     content: attr(data-label);
     position: absolute;
     left: 15px;
