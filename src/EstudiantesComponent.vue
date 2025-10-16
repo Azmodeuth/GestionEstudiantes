@@ -87,6 +87,11 @@
         </tbody>
       </table>
     </div>
+
+    <footer class="pie-pagina">
+      <p>Aplicación hecha por Robert Dorantes García.</p>
+    </footer>
+    
   </div>
 </template>
 
@@ -356,6 +361,15 @@ h2 {
 
 .tabla-estudiantes tbody tr:hover {
   background-color: #f5f5f5;
+}
+
+.pie-pagina {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  color: #777;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {
